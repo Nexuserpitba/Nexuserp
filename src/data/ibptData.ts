@@ -12,8 +12,17 @@ export interface IBPTEntry {
   ncm: string;
   descricao: string;
   federal: number;
+  importado?: number;
   estadual: number;
   municipal: number;
+  uf?: string;
+  ex?: string;
+  tipo?: string;
+  vigencia_inicio?: string;
+  vigencia_fim?: string;
+  chave?: string;
+  versao?: string;
+  fonte?: string;
 }
 
 // In-memory cache
@@ -74,7 +83,7 @@ export async function loadIBPTFromSupabase(): Promise<IBPTEntry[]> {
 
     while (hasMore) {
       const { data, error } = await (supabase.from("ibpt_dados" as any) as any)
-        .select("ncm, descricao, federal, estadual, municipal")
+        .select("ncm, descricao, federal, importado, estadual, municipal, uf, ex, tipo, vigencia_inicio, vigencia_fim, chave, versao, fonte")
         .range(from, from + pageSize - 1);
 
       if (error) throw error;
@@ -85,8 +94,17 @@ export async function loadIBPTFromSupabase(): Promise<IBPTEntry[]> {
           ncm: r.ncm,
           descricao: r.descricao,
           federal: Number(r.federal),
+          importado: Number(r.importado) || 0,
           estadual: Number(r.estadual),
           municipal: Number(r.municipal),
+          uf: r.uf || "",
+          ex: r.ex || "",
+          tipo: r.tipo || "",
+          vigencia_inicio: r.vigencia_inicio || "",
+          vigencia_fim: r.vigencia_fim || "",
+          chave: r.chave || "",
+          versao: r.versao || "",
+          fonte: r.fonte || "",
         })));
         from += pageSize;
         if (data.length < pageSize) hasMore = false;
@@ -166,11 +184,14 @@ export function getIBPTByNCM(ncm: string): IBPTEntry | null {
  */
 export function calcularTributosItem(
   ncm: string,
-  valorTotal: number
+  valorTotal: number,
+  produtoImportado: boolean = false
 ): { federal: number; estadual: number; municipal: number; total: number; percentual: number } {
   const ibpt = getIBPTByNCM(ncm);
 
-  const pctFederal = ibpt?.federal ?? 15.28;
+  const pctFederal = produtoImportado
+    ? (ibpt?.importado ?? 15.28)
+    : (ibpt?.federal ?? 15.28);
   const pctEstadual = ibpt?.estadual ?? 17.00;
   const pctMunicipal = ibpt?.municipal ?? 0;
   const pctTotal = pctFederal + pctEstadual + pctMunicipal;

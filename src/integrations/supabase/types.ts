@@ -489,33 +489,57 @@ export type Database = {
           descricao: string
           estadual: number
           federal: number
+          importado: number
           id: string
           municipal: number
           ncm: string
-          updated_at: string
+          uf: string
+          ex: string
+          tipo: string
+          vigencia_inicio: string
+          vigencia_fim: string
+          chave: string
           versao: string
+          fonte: string
+          updated_at: string
         }
         Insert: {
           created_at?: string
           descricao?: string
           estadual?: number
           federal?: number
+          importado?: number
           id?: string
           municipal?: number
           ncm: string
-          updated_at?: string
+          uf?: string
+          ex?: string
+          tipo?: string
+          vigencia_inicio?: string
+          vigencia_fim?: string
+          chave?: string
           versao?: string
+          fonte?: string
+          updated_at?: string
         }
         Update: {
           created_at?: string
           descricao?: string
           estadual?: number
           federal?: number
+          importado?: number
           id?: string
           municipal?: number
           ncm?: string
-          updated_at?: string
+          uf?: string
+          ex?: string
+          tipo?: string
+          vigencia_inicio?: string
+          vigencia_fim?: string
+          chave?: string
           versao?: string
+          fonte?: string
+          updated_at?: string
         }
         Relationships: []
       }

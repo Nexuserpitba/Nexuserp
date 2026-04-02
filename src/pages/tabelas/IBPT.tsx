@@ -8,14 +8,10 @@ import { Label } from "@/components/ui/label";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { toast } from "sonner";
-import { Upload, Search, Trash2, Download, Database, FileText, AlertTriangle, Cloud, Loader2, RefreshCw, Settings2, Key } from "lucide-react";
+import { Upload, Search, Trash2, Download, Database, FileText, AlertTriangle, Cloud, Loader2, RefreshCw, Key } from "lucide-react";
 import { ibptData, type IBPTEntry, loadIBPTFromSupabase, getIBPTCache, isCacheFromSupabase } from "@/data/ibptData";
 import { exportCSV, type ExportColumn } from "@/lib/exportUtils";
 import { supabase } from "@/integrations/supabase/client";
-
-const IBPT_TOKEN_KEY = "ibpt-api-token";
-const IBPT_UF_KEY = "ibpt-api-uf";
-const IBPT_CNPJ_KEY = "ibpt-api-cnpj";
 
 function parseIBPTCSV(text: string): IBPTEntry[] {
   const lines = text.split(/\r?\n/).filter(l => l.trim());
@@ -47,6 +43,8 @@ function parseIBPTCSV(text: string): IBPTEntry[] {
   return entries;
 }
 
+const CONFIG_ID = "00000000-0000-0000-0000-000000000001";
+
 export default function IBPT() {
   const [busca, setBusca] = useState("");
   const [allData, setAllData] = useState<IBPTEntry[]>(getIBPTCache());
@@ -59,18 +57,63 @@ export default function IBPT() {
 
   // Sync state
   const [syncing, setSyncing] = useState(false);
-  const [tokenIbpt, setTokenIbpt] = useState(() => localStorage.getItem(IBPT_TOKEN_KEY) || "");
-  const [uf, setUf] = useState(() => localStorage.getItem(IBPT_UF_KEY) || "SP");
-  const [cnpjIbpt, setCnpjIbpt] = useState(() => localStorage.getItem(IBPT_CNPJ_KEY) || "");
+  const [tokenIbpt, setTokenIbpt] = useState("");
+  const [uf, setUf] = useState("SP");
+  const [cnpjIbpt, setCnpjIbpt] = useState("");
   const [configOpen, setConfigOpen] = useState(false);
+  const [versaoTabela, setVersaoTabela] = useState("");
+  const [ultimaSinc, setUltimaSinc] = useState("");
+  const [statusSinc, setStatusSinc] = useState("");
 
   useEffect(() => {
-    loadIBPTFromSupabase().then(data => {
-      setAllData(data);
-      setFonte(isCacheFromSupabase() ? "supabase" : "interna");
-      setLoading(false);
-    });
+    loadConfig();
+    loadData();
   }, []);
+
+  const loadConfig = async () => {
+    try {
+      const { data, error } = await (supabase.from("ibpt_config" as any) as any)
+        .select("token_ibpt, uf, cnpj, ultima_sinc, total_registros, status")
+        .eq("id", CONFIG_ID)
+        .single();
+
+      if (error) {
+        console.error("Erro ao carregar config:", error);
+        loadConfigFromLocal();
+        return;
+      }
+
+      if (data) {
+        if (data.token_ibpt) setTokenIbpt(data.token_ibpt);
+        if (data.uf) setUf(data.uf);
+        if (data.cnpj) setCnpjIbpt(data.cnpj);
+        if (data.ultima_sinc) setUltimaSinc(new Date(data.ultima_sinc).toLocaleString("pt-BR"));
+        if (data.status) setStatusSinc(data.status);
+      }
+    } catch (err) {
+      loadConfigFromLocal();
+    }
+  };
+
+  const loadConfigFromLocal = () => {
+    const savedToken = localStorage.getItem("ibpt-api-token");
+    const savedUf = localStorage.getItem("ibpt-api-uf");
+    const savedCnpj = localStorage.getItem("ibpt-api-cnpj");
+    if (savedToken) setTokenIbpt(savedToken);
+    if (savedUf) setUf(savedUf);
+    if (savedCnpj) setCnpjIbpt(savedCnpj);
+  };
+
+  const loadData = async () => {
+    const data = await loadIBPTFromSupabase();
+    setAllData(data);
+    setFonte(isCacheFromSupabase() ? "supabase" : "interna");
+    setLoading(false);
+    // Get version from data
+    if (data.length > 0 && data[0].versao) {
+      setVersaoTabela(data[0].versao);
+    }
+  };
 
   const filtered = useMemo(() => {
     if (!busca.trim()) return allData.slice(0, 200);
@@ -80,12 +123,55 @@ export default function IBPT() {
     ).slice(0, 200);
   }, [allData, busca]);
 
-  // Auto-sync via IBPT API (public)
+  // Save config to Supabase + localStorage
+  const saveConfig = async () => {
+    try {
+      const { error } = await (supabase.from("ibpt_config" as any) as any)
+        .update({
+          token_ibpt: tokenIbpt,
+          uf: uf.toUpperCase(),
+          cnpj: cnpjIbpt.replace(/\D/g, ""),
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", CONFIG_ID);
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      localStorage.setItem("ibpt-api-token", tokenIbpt);
+      localStorage.setItem("ibpt-api-uf", uf);
+      localStorage.setItem("ibpt-api-cnpj", cnpjIbpt);
+
+      toast.success("Configuração salva com sucesso!");
+      setConfigOpen(false);
+    } catch (err: any) {
+      toast.error("Erro ao salvar", { description: err.message });
+    }
+  };
+
+  // Sync via IBPT API
   const handleSync = async () => {
+    if (!tokenIbpt) {
+      toast.warning("Configure seu token IBPT primeiro", {
+        description: "Clique em 'Configurar Token' e insira o token do deolhonoimposto.ibpt.org.br",
+      });
+      setConfigOpen(true);
+      return;
+    }
+
+    if (!cnpjIbpt) {
+      toast.warning("Configure o CNPJ primeiro", {
+        description: "Clique em 'Configurar Token' e insira o CNPJ da empresa",
+      });
+      setConfigOpen(true);
+      return;
+    }
+
     setSyncing(true);
     toast.info("Sincronizando com IBPT...", {
-      description: "Baixando 11.000+ NCMs. Isso pode levar 1-2 minutos.",
-      duration: 15000,
+      description: "Baixando alíquotas. Isso pode levar 1-2 minutos.",
+      duration: 30000,
     });
 
     try {
@@ -104,35 +190,43 @@ export default function IBPT() {
           body: JSON.stringify({
             uf: uf.toUpperCase(),
             acao: "sync",
+            token: tokenIbpt,
+            cnpj: cnpjIbpt.replace(/\D/g, ""),
           }),
         }
       );
 
       const result = await res.json();
-      if (!res.ok) throw new Error(result.erro || "Erro na sincronização");
 
-      toast.success(`Sincronização concluída!`, {
+      if (!res.ok) {
+        const errorMsg = result.erro || result.detalhe || "Erro na sincronização";
+        throw new Error(errorMsg);
+      }
+
+      if (!result.sucesso) {
+        throw new Error(result.erro || "Sincronização não retornou sucesso");
+      }
+
+      toast.success("Sincronização concluída!", {
         description: `${result.total?.toLocaleString()} NCMs importados (v${result.versao}) - ${result.uf}`,
       });
 
-      // Reload data
+      // Reload everything
       const data = await loadIBPTFromSupabase();
       setAllData(data);
       setFonte("supabase");
+      setVersaoTabela(result.versao || "");
+      setUltimaSinc(new Date().toLocaleString("pt-BR"));
+      setStatusSinc("sincronizado");
     } catch (err: any) {
-      toast.error("Erro na sincronização", { description: err.message });
+      console.error("Sync error:", err);
+      toast.error("Erro na sincronização", {
+        description: err.message,
+        duration: 10000,
+      });
     } finally {
       setSyncing(false);
     }
-  };
-
-  // Save token config
-  const saveConfig = () => {
-    localStorage.setItem(IBPT_TOKEN_KEY, tokenIbpt);
-    localStorage.setItem(IBPT_UF_KEY, uf);
-    localStorage.setItem(IBPT_CNPJ_KEY, cnpjIbpt);
-    toast.success("Configuração salva");
-    setConfigOpen(false);
   };
 
   const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -162,9 +256,9 @@ export default function IBPT() {
     if (!preview) return;
     setUploading(true);
     try {
-      const csvLines = ["ncm;descricao;federal;estadual;municipal"];
+      const csvLines = ["ncm;descricao;federal;importado;estadual;municipal"];
       preview.forEach(e => {
-        csvLines.push(`${e.ncm};${e.descricao};${e.federal};${e.estadual};${e.municipal}`);
+        csvLines.push(`${e.ncm};${e.descricao};${e.federal};${e.importado ?? 0};${e.estadual};${e.municipal}`);
       });
       const csvContent = csvLines.join("\n");
 
@@ -208,6 +302,7 @@ export default function IBPT() {
       setAllData(ibptData);
       setFonte("interna");
       setPreview(null);
+      setVersaoTabela("");
       toast.success("Tabela IBPT limpa. Usando dados internos.");
     } catch (err: any) {
       toast.error("Erro ao limpar dados: " + err.message);
@@ -218,6 +313,7 @@ export default function IBPT() {
     { header: "NCM", key: "ncm" },
     { header: "Descrição", key: "descricao" },
     { header: "Federal (%)", key: "federal", align: "right" },
+    { header: "Importado (%)", key: "importado", align: "right" },
     { header: "Estadual (%)", key: "estadual", align: "right" },
     { header: "Municipal (%)", key: "municipal", align: "right" },
   ];
@@ -234,7 +330,7 @@ export default function IBPT() {
         description="Base de alíquotas aproximadas de tributos por NCM (Lei 12.741/2012)"
       />
 
-      <div className="grid gap-4 md:grid-cols-3 mb-6">
+      <div className="grid gap-4 md:grid-cols-4 mb-6">
         <Card>
           <CardContent className="pt-4 text-center">
             <Database className="mx-auto mb-2 text-primary" size={28} />
@@ -256,8 +352,17 @@ export default function IBPT() {
         <Card>
           <CardContent className="pt-4 text-center">
             <AlertTriangle className="mx-auto mb-2 text-amber-500" size={28} />
-            <p className="text-2xl font-bold">2025.1</p>
+            <p className="text-2xl font-bold">{versaoTabela || "-"}</p>
             <p className="text-xs text-muted-foreground">Versão da tabela</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="pt-4 text-center">
+            <RefreshCw className="mx-auto mb-2 text-green-500" size={28} />
+            <p className="text-sm font-bold">{ultimaSinc || "Nunca"}</p>
+            <p className="text-xs text-muted-foreground">
+              Última sync {statusSinc && `(${statusSinc})`}
+            </p>
           </CardContent>
         </Card>
       </div>
@@ -278,13 +383,13 @@ export default function IBPT() {
         </CardHeader>
         <CardContent>
           <div className="flex flex-wrap gap-3 items-center">
-            <Button
-              onClick={handleSync}
-              disabled={syncing}
-              className="gap-2"
-            >
+            <Button onClick={handleSync} disabled={syncing} className="gap-2">
               {syncing ? <Loader2 size={16} className="animate-spin" /> : <RefreshCw size={16} />}
               {syncing ? "Sincronizando..." : "Sincronizar Agora"}
+            </Button>
+
+            <Button variant="outline" onClick={() => setConfigOpen(true)} className="gap-2">
+              <Key size={16} /> Configurar Token
             </Button>
 
             <Button variant="outline" onClick={() => fileRef.current?.click()} className="gap-2">
@@ -300,12 +405,17 @@ export default function IBPT() {
           </div>
 
           {/* Token status */}
-          {tokenIbpt && (
+          {tokenIbpt ? (
             <div className="mt-3 flex items-center gap-2 text-sm text-muted-foreground">
               <Key size={14} className="text-green-500" />
               <span>Token configurado</span>
               <Badge variant="outline">{uf.toUpperCase()}</Badge>
               {cnpjIbpt && <Badge variant="outline">CNPJ: {cnpjIbpt}</Badge>}
+            </div>
+          ) : (
+            <div className="mt-3 flex items-center gap-2 text-sm text-amber-600">
+              <AlertTriangle size={14} />
+              <span>Configure seu token IBPT para sincronização automática</span>
             </div>
           )}
 
@@ -320,6 +430,7 @@ export default function IBPT() {
                       <TableHead>NCM</TableHead>
                       <TableHead>Descrição</TableHead>
                       <TableHead className="text-right">Federal %</TableHead>
+                      <TableHead className="text-right">Importado %</TableHead>
                       <TableHead className="text-right">Estadual %</TableHead>
                       <TableHead className="text-right">Municipal %</TableHead>
                       <TableHead className="text-right">Total %</TableHead>
@@ -331,6 +442,7 @@ export default function IBPT() {
                         <TableCell className="font-mono">{e.ncm}</TableCell>
                         <TableCell className="max-w-[300px] truncate">{e.descricao}</TableCell>
                         <TableCell className="text-right">{e.federal.toFixed(2)}</TableCell>
+                        <TableCell className="text-right">{(e.importado ?? 0).toFixed(2)}</TableCell>
                         <TableCell className="text-right">{e.estadual.toFixed(2)}</TableCell>
                         <TableCell className="text-right">{e.municipal.toFixed(2)}</TableCell>
                         <TableCell className="text-right font-bold">{(e.federal + e.estadual + e.municipal).toFixed(2)}</TableCell>
@@ -382,6 +494,7 @@ export default function IBPT() {
                   <TableHead>NCM</TableHead>
                   <TableHead>Descrição</TableHead>
                   <TableHead className="text-right">Federal %</TableHead>
+                  <TableHead className="text-right">Importado %</TableHead>
                   <TableHead className="text-right">Estadual %</TableHead>
                   <TableHead className="text-right">Municipal %</TableHead>
                   <TableHead className="text-right">Total %</TableHead>
@@ -395,6 +508,7 @@ export default function IBPT() {
                     </TableCell>
                     <TableCell className="max-w-[350px] truncate">{e.descricao}</TableCell>
                     <TableCell className="text-right">{e.federal.toFixed(2)}</TableCell>
+                    <TableCell className="text-right">{(e.importado ?? 0).toFixed(2)}</TableCell>
                     <TableCell className="text-right">{e.estadual.toFixed(2)}</TableCell>
                     <TableCell className="text-right">{e.municipal.toFixed(2)}</TableCell>
                     <TableCell className="text-right font-bold">{(e.federal + e.estadual + e.municipal).toFixed(2)}</TableCell>
@@ -402,7 +516,7 @@ export default function IBPT() {
                 ))}
                 {filtered.length === 0 && (
                   <TableRow>
-                    <TableCell colSpan={6} className="text-center text-muted-foreground py-8">
+                    <TableCell colSpan={7} className="text-center text-muted-foreground py-8">
                       {loading ? "Carregando dados do Supabase..." : `Nenhum NCM encontrado para "${busca}"`}
                     </TableCell>
                   </TableRow>
@@ -452,7 +566,7 @@ export default function IBPT() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="ibpt-cnpj">CNPJ (opcional)</Label>
+                <Label htmlFor="ibpt-cnpj">CNPJ (obrigatório)</Label>
                 <Input
                   id="ibpt-cnpj"
                   value={cnpjIbpt}
@@ -465,7 +579,7 @@ export default function IBPT() {
               <Button variant="outline" className="flex-1" onClick={() => setConfigOpen(false)}>
                 Cancelar
               </Button>
-              <Button className="flex-1" onClick={saveConfig} disabled={!tokenIbpt.trim()}>
+              <Button className="flex-1" onClick={saveConfig} disabled={!tokenIbpt.trim() || !cnpjIbpt.trim()}>
                 Salvar
               </Button>
             </div>

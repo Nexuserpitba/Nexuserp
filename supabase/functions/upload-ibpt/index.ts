@@ -10,9 +10,17 @@ interface IBPTRow {
   ncm: string;
   descricao: string;
   federal: number;
+  importado: number;
   estadual: number;
   municipal: number;
+  uf: string;
+  ex: string;
+  tipo: string;
+  vigencia_inicio: string;
+  vigencia_fim: string;
+  chave: string;
   versao: string;
+  fonte: string;
 }
 
 function parseCSV(text: string): IBPTRow[] {
@@ -24,10 +32,18 @@ function parseCSV(text: string): IBPTRow[] {
 
   const iNCM = header.findIndex((h) => h === "codigo" || h === "ncm" || h === "código");
   const iDesc = header.findIndex((h) => h.includes("descri"));
-  const iFed = header.findIndex((h) => h.includes("nacionalfederal") || h.includes("federal") || h.includes("aliqnac"));
+  const iFed = header.findIndex((h) => h.includes("nacionalfederal") || h.includes("nacional") || h.includes("federal") || h.includes("aliqnac"));
+  const iImp = header.findIndex((h) => h.includes("importado") || h.includes("aliqimp"));
   const iEst = header.findIndex((h) => h.includes("estadual") || h.includes("icms"));
   const iMun = header.findIndex((h) => h.includes("municipal") || h.includes("iss"));
   const iTipo = header.findIndex((h) => h === "tipo" || h === "ex");
+  const iUF = header.findIndex((h) => h === "uf");
+  const iEx = header.findIndex((h) => h === "ex");
+  const iVigIni = header.findIndex((h) => h.includes("vigenciainicio") || h.includes("inicio"));
+  const iVigFim = header.findIndex((h) => h.includes("vigenciafim") || h.includes("fim"));
+  const iChave = header.findIndex((h) => h === "chave");
+  const iVersao = header.findIndex((h) => h === "versao" || h === "versão");
+  const iFonte = header.findIndex((h) => h === "fonte");
 
   if (iNCM === -1 || iFed === -1) {
     throw new Error("CSV missing required columns (codigo/ncm and federal/nacionalfederal)");
@@ -46,9 +62,17 @@ function parseCSV(text: string): IBPTRow[] {
       ncm,
       descricao: iDesc !== -1 ? cols[iDesc] : "",
       federal: parseFloat((cols[iFed] || "0").replace(",", ".")) || 0,
+      importado: iImp !== -1 ? parseFloat((cols[iImp] || "0").replace(",", ".")) || 0 : 0,
       estadual: iEst !== -1 ? parseFloat((cols[iEst] || "0").replace(",", ".")) || 0 : 0,
       municipal: iMun !== -1 ? parseFloat((cols[iMun] || "0").replace(",", ".")) || 0 : 0,
-      versao: "",
+      uf: iUF !== -1 ? cols[iUF] : "",
+      ex: iEx !== -1 ? cols[iEx] : "",
+      tipo: iTipo !== -1 ? cols[iTipo] : "",
+      vigencia_inicio: iVigIni !== -1 ? cols[iVigIni] : "",
+      vigencia_fim: iVigFim !== -1 ? cols[iVigFim] : "",
+      chave: iChave !== -1 ? cols[iChave] : "",
+      versao: iVersao !== -1 ? cols[iVersao] : "",
+      fonte: iFonte !== -1 ? cols[iFonte] : "CSV",
     });
   }
   return entries;
