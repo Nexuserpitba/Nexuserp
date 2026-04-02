@@ -1,0 +1,1 @@
+UPDATE profiles SET limite_desconto = 100 WHERE login = 'admin@wdtech.com.br';

@@ -1,0 +1,17 @@
+{
+  "name": "nexuserp-bi-backend",
+  "version": "1.0.0",
+  "description": "Backend BI API para NexusERP",
+  "main": "bi-api.js",
+  "scripts": {
+    "start": "node bi-api.js",
+    "dev": "node bi-api.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.6",
+    "express": "^5.2.1"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

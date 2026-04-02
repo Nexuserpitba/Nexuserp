@@ -1,0 +1,1 @@
+ALTER TABLE public.empresas ADD COLUMN IF NOT EXISTS smtp_config jsonb DEFAULT NULL;

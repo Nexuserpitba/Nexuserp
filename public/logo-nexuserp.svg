@@ -1,0 +1,102 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0f172a;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1e293b;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="mainGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#06b6d4;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#3b82f6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#8b5cf6;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="accentGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#22d3ee;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#a78bfa;stop-opacity:1" />
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="softGlow">
+      <feGaussianBlur stdDeviation="8" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="512" height="512" rx="80" fill="url(#bgGrad)"/>
+  
+  <!-- Outer ring glow -->
+  <circle cx="256" cy="220" r="140" fill="none" stroke="url(#mainGrad)" stroke-width="2" opacity="0.3" filter="url(#softGlow)"/>
+  
+  <!-- Main hexagon shape -->
+  <g transform="translate(256, 220)">
+    <!-- Outer hexagon -->
+    <polygon points="0,-120 104,-60 104,60 0,120 -104,60 -104,-60" fill="none" stroke="url(#mainGrad)" stroke-width="3" filter="url(#glow)"/>
+    
+    <!-- Inner hexagon -->
+    <polygon points="0,-90 78,-45 78,45 0,90 -78,45 -78,-45" fill="none" stroke="url(#accentGrad)" stroke-width="2" opacity="0.6"/>
+    
+    <!-- Central N letter - futuristic style -->
+    <g filter="url(#glow)">
+      <!-- N shape with gradient -->
+      <path d="M-35,45 L-35,-45 L35,45 L35,-45" fill="none" stroke="url(#mainGrad)" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+      
+      <!-- Decorative dots -->
+      <circle cx="-35" cy="-45" r="5" fill="#22d3ee"/>
+      <circle cx="35" cy="-45" r="5" fill="#a78bfa"/>
+      <circle cx="-35" cy="45" r="5" fill="#22d3ee"/>
+      <circle cx="35" cy="45" r="5" fill="#a78bfa"/>
+    </g>
+    
+    <!-- Orbit lines -->
+    <ellipse cx="0" cy="0" rx="100" ry="30" fill="none" stroke="url(#accentGrad)" stroke-width="1.5" opacity="0.4" transform="rotate(-30)"/>
+    <ellipse cx="0" cy="0" rx="100" ry="30" fill="none" stroke="url(#accentGrad)" stroke-width="1.5" opacity="0.4" transform="rotate(30)"/>
+    
+    <!-- Data nodes -->
+    <circle cx="-85" cy="-50" r="6" fill="#06b6d4" filter="url(#glow)"/>
+    <circle cx="85" cy="-50" r="6" fill="#8b5cf6" filter="url(#glow)"/>
+    <circle cx="0" cy="100" r="6" fill="#3b82f6" filter="url(#glow)"/>
+    
+    <!-- Connection lines -->
+    <line x1="-85" y1="-50" x2="-35" y2="-20" stroke="#06b6d4" stroke-width="1" opacity="0.5"/>
+    <line x1="85" y1="-50" x2="35" y2="-20" stroke="#8b5cf6" stroke-width="1" opacity="0.5"/>
+    <line x1="0" y1="100" x2="0" y2="45" stroke="#3b82f6" stroke-width="1" opacity="0.5"/>
+  </g>
+  
+  <!-- Bottom circuit pattern -->
+  <g transform="translate(256, 380)" opacity="0.6">
+    <line x1="-80" y1="0" x2="-40" y2="0" stroke="url(#accentGrad)" stroke-width="2"/>
+    <line x1="40" y1="0" x2="80" y2="0" stroke="url(#accentGrad)" stroke-width="2"/>
+    <circle cx="-90" cy="0" r="4" fill="#22d3ee"/>
+    <circle cx="90" cy="0" r="4" fill="#a78bfa"/>
+    <circle cx="0" cy="0" r="3" fill="#3b82f6"/>
+    
+    <!-- Small data lines -->
+    <line x1="-100" y1="15" x2="-60" y2="15" stroke="#06b6d4" stroke-width="1" opacity="0.4"/>
+    <line x1="60" y1="15" x2="100" y2="15" stroke="#8b5cf6" stroke-width="1" opacity="0.4"/>
+    <circle cx="-110" cy="15" r="2" fill="#06b6d4"/>
+    <circle cx="110" cy="15" r="2" fill="#8b5cf6"/>
+  </g>
+  
+  <!-- Text: NexusERP -->
+  <text x="256" y="440" text-anchor="middle" font-family="Arial, sans-serif" font-size="48" font-weight="bold" fill="url(#mainGrad)" filter="url(#glow)">NexusERP</text>
+  
+  <!-- Tagline -->
+  <text x="256" y="475" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" fill="#94a3b8" letter-spacing="2">A TECNOLOGIA EM SUAS MÃOS</text>
+  
+  <!-- Decorative corner elements -->
+  <g opacity="0.3">
+    <line x1="50" y1="50" x2="100" y2="50" stroke="#22d3ee" stroke-width="2"/>
+    <line x1="50" y1="50" x2="50" y2="100" stroke="#22d3ee" stroke-width="2"/>
+    
+    <line x1="462" y1="50" x2="412" y2="50" stroke="#a78bfa" stroke-width="2"/>
+    <line x1="462" y1="50" x2="462" y2="100" stroke="#a78bfa" stroke-width="2"/>
+  </g>
+</svg>

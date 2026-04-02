@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0f172a;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1e293b;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="mainGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#06b6d4;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#3b82f6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#8b5cf6;stop-opacity:1" />
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="512" height="512" rx="80" fill="url(#bgGrad)"/>
+  
+  <!-- Main hexagon shape -->
+  <g transform="translate(256, 256)">
+    <!-- Outer hexagon -->
+    <polygon points="0,-150 130,-75 130,75 0,150 -130,75 -130,-75" fill="none" stroke="url(#mainGrad)" stroke-width="4" filter="url(#glow)"/>
+    
+    <!-- Inner hexagon -->
+    <polygon points="0,-110 95,-55 95,55 0,110 -95,55 -95,-55" fill="none" stroke="url(#mainGrad)" stroke-width="2" opacity="0.5"/>
+    
+    <!-- Central N letter -->
+    <g filter="url(#glow)">
+      <path d="M-45,55 L-45,-55 L45,55 L45,-55" fill="none" stroke="url(#mainGrad)" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+    
+    <!-- Decorative nodes -->
+    <circle cx="-110" cy="-60" r="8" fill="#06b6d4" filter="url(#glow)"/>
+    <circle cx="110" cy="-60" r="8" fill="#8b5cf6" filter="url(#glow)"/>
+    <circle cx="0" cy="125" r="8" fill="#3b82f6" filter="url(#glow)"/>
+    
+    <!-- Connection lines -->
+    <line x1="-110" y1="-60" x2="-45" y2="-25" stroke="#06b6d4" stroke-width="2" opacity="0.6"/>
+    <line x1="110" y1="-60" x2="45" y2="-25" stroke="#8b5cf6" stroke-width="2" opacity="0.6"/>
+    <line x1="0" y1="125" x2="0" y2="55" stroke="#3b82f6" stroke-width="2" opacity="0.6"/>
+  </g>
+</svg>

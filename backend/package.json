@@ -1,0 +1,28 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "NexusERP Backend - Auth, NFe, Webhooks",
+  "main": "index.js",
+  "scripts": {
+    "start": "node server.js",
+    "start:bi": "node bi-api.js",
+    "start:all": "concurrently \"node server.js\" \"node bi-api.js\"",
+    "test": "node --test tests/*.test.js",
+    "test:auth": "node --test tests/auth.test.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.101.1",
+    "axios": "^1.13.6",
+    "cors": "^2.8.6",
+    "dotenv": "^17.3.1",
+    "express": "^5.2.1",
+    "fast-xml-parser": "^5.5.9",
+    "node-forge": "^1.4.0",
+    "puppeteer": "^24.40.0",
+    "xml-crypto": "^6.1.2"
+  }
+}

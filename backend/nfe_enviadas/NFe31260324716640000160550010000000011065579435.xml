@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<NFe xmlns="http://www.portalfiscal.inf.br/nfe">
+  <infNFe versao="4.00" Id="NFe31260324716640000160550010000000011065579435">
+    <ide>
+      <cUF>31</cUF>
+      <cNF>06557943</cNF>
+      <natOp>Venda de Mercadorias</natOp>
+      <mod>55</mod>
+      <serie>1</serie>
+      <nNF>1</nNF>
+      <dhEmi>2026-03-27T09:44:00-03:00</dhEmi>
+      <dhSaiEnt>2026-03-27T09:44:00-03:00</dhSaiEnt>
+      <tpNF>1</tpNF>
+      <idDest>2</idDest>
+      <cMunFG>3134202</cMunFG>
+      <tpImp>1</tpImp>
+      <tpEmis>1</tpEmis>
+      <cDV>5</cDV>
+      <tpAmb>2</tpAmb>
+      <finNFe>1</finNFe>
+      <indFinal>1</indFinal>
+      <indPres>1</indPres>
+      <procEmi>0</procEmi>
+      <verProc>NexusERP 1.0.0</verProc>
+    </ide>
+    <emit>
+      <CNPJ>24716640000160</CNPJ>
+      <xNome>DENNER MARCIO DE OLIVEIRA</xNome>
+      <xFant>WDTECH ERP - TECNOLOGIA EM SUAS MAOS</xFant>
+      <enderEmit>
+        <xLgr>Rua Granada</xLgr>
+        <nro>S/N</nro>
+        <xCpl></xCpl>
+        <xBairro>Jardim Europa</xBairro>
+        <cMun>3134202</cMun>
+        <xMun>Ituiutaba</xMun>
+        <UF>MG</UF>
+        <CEP>38307616</CEP>
+        <cPais>1058</cPais>
+        <xPais>Brasil</xPais>
+        <fone>34999732722</fone>
+      </enderEmit>
+      <IE>ISENTO</IE>
+      <CRT>1</CRT>
+    </emit>
+    <dest>
+      <CNPJ>14690810000121</CNPJ>
+      <xNome>SUPERMERCADO E COMERCIO NOSSA SENHORA APARECIDA LT</xNome>
+      <enderDest>
+        <xLgr>RUA ABADIA</xLgr>
+        <nro>1235</nro>
+        <xCpl></xCpl>
+        <xBairro>CENTRO</xBairro>
+        <cMun>3134202</cMun>
+        <xMun>Santa Vitoria</xMun>
+        <UF>MG</UF>
+        <CEP>38320000</CEP>
+        <cPais>1058</cPais>
+        <xPais>Brasil</xPais>
+        <fone>3432518888</fone>
+      </enderDest>
+      <indIEDest>1</indIEDest>
+      <IE>005241254200</IE>
+    </dest>
+    
+    <det nItem="1">
+      <prod>
+        <cProd>001</cProd>
+        <cEAN></cEAN>
+        <xProd>RELOGIO WHATS </xProd>
+        <NCM>23023010</NCM>
+        <CFOP>5101</CFOP>
+        <uCom>UN</uCom>
+        <qCom>1.00</qCom>
+        <vUnCom>520.00</vUnCom>
+        <vProd>520.00</vProd>
+        <cEANTrib></cEANTrib>
+        <uTrib>UN</uTrib>
+        <qTrib>1.00</qTrib>
+        <vUnTrib>520.00</vUnTrib>
+        <indTot>1</indTot>
+      </prod>
+      <imposto>
+        <ICMS>
+          
+        <ICMSSN>
+          <CSOSN102>
+            <orig>0</orig>
+            <CSOSN>102</CSOSN>
+          </CSOSN102>
+        </ICMSSN>
+      
+        </ICMS>
+        <PIS>
+          <PISOutr>
+            <CST>99</CST>
+            <vBC>0.00</vBC>
+            <pPIS>0.00</pPIS>
+            <vPIS>0.00</vPIS>
+          </PISOutr>
+        </PIS>
+        <COFINS>
+          <COFINSOutr>
+            <CST>99</CST>
+            <vBC>0.00</vBC>
+            <pCOFINS>0.00</pCOFINS>
+            <vCOFINS>0.00</vCOFINS>
+          </COFINSOutr>
+        </COFINS>
+      </imposto>
+    </det>
+    
+    <det nItem="2">
+      <prod>
+        <cProd>00002</cProd>
+        <cEAN></cEAN>
+        <xProd>BATATA PALHA 500 GR</xProd>
+        <NCM>20041000</NCM>
+        <CFOP>5101</CFOP>
+        <uCom>UN</uCom>
+        <qCom>1.00</qCom>
+        <vUnCom>23.90</vUnCom>
+        <vProd>23.90</vProd>
+        <cEANTrib></cEANTrib>
+        <uTrib>UN</uTrib>
+        <qTrib>1.00</qTrib>
+        <vUnTrib>23.90</vUnTrib>
+        <indTot>1</indTot>
+      </prod>
+      <imposto>
+        <ICMS>
+          
+        <ICMSSN>
+          <CSOSN102>
+            <orig>0</orig>
+            <CSOSN>102</CSOSN>
+          </CSOSN102>
+        </ICMSSN>
+      
+        </ICMS>
+        <PIS>
+          <PISOutr>
+            <CST>99</CST>
+            <vBC>0.00</vBC>
+            <pPIS>0.00</pPIS>
+            <vPIS>0.00</vPIS>
+          </PISOutr>
+        </PIS>
+        <COFINS>
+          <COFINSOutr>
+            <CST>99</CST>
+            <vBC>0.00</vBC>
+            <pCOFINS>0.00</pCOFINS>
+            <vCOFINS>0.00</vCOFINS>
+          </COFINSOutr>
+        </COFINS>
+      </imposto>
+    </det>
+    
+    <total>
+      <ICMSTot>
+        <vBC>0.00</vBC>
+        <vICMS>0.00</vICMS>
+        <vICMSDeson>0.00</vICMSDeson>
+        <vFCP>0.00</vFCP>
+        <vBCST>0.00</vBCST>
+        <vST>0.00</vST>
+        <vFCPST>0.00</vFCPST>
+        <vFCPSTRet>0.00</vFCPSTRet>
+        <vProd>543.90</vProd>
+        <vFrete>0.00</vFrete>
+        <vSeg>0.00</vSeg>
+        <vDesc>0.00</vDesc>
+        <vII>0.00</vII>
+        <vIPI>0.00</vIPI>
+        <vIPIDevol>0.00</vIPIDevol>
+        <vPIS>0.00</vPIS>
+        <vCOFINS>0.00</vCOFINS>
+        <vOutro>0.00</vOutro>
+        <vNF>543.90</vNF>
+      </ICMSTot>
+    </total>
+    <transp>
+      <modFrete>9</modFrete>
+      
+      <vol>
+        <qVol>1</qVol>
+        <esp>VOL</esp>
+        <pesoL>0.00</pesoL>
+        <pesoB>0.00</pesoB>
+      </vol>
+    </transp>
+    
+    <pag>
+      <detPag>
+        <indPag>1</indPag>
+        <tPag>00</tPag>
+        <vPag>543.90</vPag>
+      </detPag>
+    </pag>
+    <infAdic>
+      <infCpl></infCpl>
+    </infAdic>
+  </infNFe>
+</NFe>

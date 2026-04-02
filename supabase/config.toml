@@ -1,0 +1,22 @@
+project_id = "hgkpnfynwpitqkdbmxvo"
+
+[functions.seed-admin]
+verify_jwt = false
+
+[functions.manage-users]
+verify_jwt = false
+
+[functions.upload-ibpt]
+verify_jwt = false
+
+[functions.fetch-ncm-web]
+verify_jwt = false
+
+[functions.send-smtp-email]
+verify_jwt = false
+
+[functions.send-report-email]
+verify_jwt = false
+
+[functions.weekly-report]
+verify_jwt = false

@@ -1,0 +1,59 @@
+version: '3.8'
+
+services:
+  # Frontend React (nginx)
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    depends_on:
+      - nfe-backend
+    environment:
+      - NODE_ENV=production
+    restart: unless-stopped
+
+  # Backend NFe + Auth (porta 3001)
+  nfe-backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.nfe
+    ports:
+      - "3001:3001"
+    environment:
+      - PORT=3001
+      - NODE_ENV=production
+      - SUPABASE_URL=${SUPABASE_URL:-https://nlrmhzazxhrywaldzhjj.supabase.co}
+      - SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_ROLE_KEY}
+      - SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}
+      - WEBHOOK_API_KEY=${WEBHOOK_API_KEY}
+      - JWT_SECRET=${JWT_SECRET}
+    volumes:
+      - ./backend/nfe_enviadas:/app/nfe_enviadas
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:3001/api/webhook/intelbras/eventos"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  # Backend BI API (porta 3002)
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "3002:3002"
+    environment:
+      - BI_PORT=3002
+      - NODE_ENV=production
+      - SUPABASE_URL=${SUPABASE_URL:-https://nlrmhzazxhrywaldzhjj.supabase.co}
+      - SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_ROLE_KEY}
+    volumes:
+      - ./backend/bi_data:/app/bi_data
+    restart: unless-stopped
+
+networks:
+  default:
+    driver: bridge
